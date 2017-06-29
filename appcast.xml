@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Reinvently MoodBooards</title>
+    <link>http://sparkle-project.org/files/sparkletestcast.xml</link>
+    <description>A streamlined Sketch plugin for creating moodboards quickly and easily. Just do a search, check the suitable images, and - voila -  you have a beautiful moodboard. Keep inspired!</description>
+    <language>en</language>
+      <item>
+        <title>Version 1.0.0</title>
+        <description>
+          <![CDATA[
+            <ul>
+              <li>A streamlined Sketch plugin for creating moodboards quickly and easily. Just do a search, check the suitable images, and - voila -  you have a beautiful moodboard. Keep inspired!</li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="https://github.com/Reinvently/moodboards-sketch-plugin/releases/download/v1.0.0/ReinventlyMoodboards.sketchplugin.zip" sparkle:version="1.0" />
+      </item>
+  </channel>
+</rss>

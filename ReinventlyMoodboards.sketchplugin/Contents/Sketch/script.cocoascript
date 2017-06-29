@@ -1,0 +1,17 @@
+@import 'SketchPlugin.framework/RSPHelper.js'
+var onRun = function(context) {
+  var main = RSPMain.alloc().init();
+  main.run(context)
+};
+
+function openHelp(){
+  openURL('https://github.com/Reinvently/moodboards-sketch-plugin');
+}
+
+function openFeedback(){
+  openURL('https://github.com/Reinvently/moodboards-sketch-plugin/issues/new');
+}
+
+function openURL(url){
+	 NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
+}

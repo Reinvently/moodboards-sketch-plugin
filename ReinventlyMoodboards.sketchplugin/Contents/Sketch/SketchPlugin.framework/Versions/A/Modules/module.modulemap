@@ -1,0 +1,6 @@
+framework module SketchPlugin {
+  umbrella header "SketchPlugin.h"
+
+  export *
+  module * { export * }
+}

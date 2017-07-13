@@ -7,11 +7,12 @@
 //
 
 #import "RSPMainPanelViewModel.h"
-#import "Config.h"
+#import "Macros.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RSPMainPanelViewModel ()
+
 @property NSUInteger page;
 @property(strong) CollectionViewDataSource *dataSource;
 @end
@@ -54,6 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 ///
+/// Check if pages is reset
+/// @return isResetPage
+- (BOOL)isResetPage {
+    return self.page == 1;
+}
+
+///
 /// @return Artboard size type
 - (CGSize)artboardGridSize {
     CGSize const artboardGridSizes[3] = {
@@ -78,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)artboardGridHintText {
     int columns = (int) self.artboardGridSize.width;
     int rows = (int) self.artboardGridSize.height;
-    return [NSString stringWithFormat:GridHintText, columns, rows];
+    return [NSString stringWithFormat:RSPLocalizedString(@"%i columns x %i rows"), columns, rows];
 }
 
 ///

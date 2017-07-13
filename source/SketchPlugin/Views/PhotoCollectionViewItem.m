@@ -9,10 +9,12 @@
 #import "PhotoCollectionViewItem.h"
 
 @interface PhotoCollectionViewItem ()
+
 @property(strong) IBOutlet NSImageView *checkBox;
 @end
 
 @implementation PhotoCollectionViewItem
+
 #pragma mark -Lifecycle
 
 - (void)viewDidLoad {
@@ -47,6 +49,7 @@
     if (iPath == nil) {
         return;
     }
+
     NSSet *indexPathSet = [NSSet setWithCollectionViewIndexPath:iPath];
     [self.collectionView deselectItemsAtIndexPaths:indexPathSet];
     if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:didDeselectItemsAtIndexPaths:)]) {

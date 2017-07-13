@@ -1,0 +1,6 @@
+/****************************************************************************/
+/* Localization file */
+"Moodboard %li" = "Moodboard %li";
+"Moodboard" = "Moodboard";
+"%i columns x %i rows" = "%i columns x %i rows";
+"You have sent too many search requests in a given amount of time. Please try again later" = "You have sent too many search requests in a given amount of time. Please try again later";

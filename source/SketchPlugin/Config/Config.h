@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 
 #pragma mark - Config
+
 typedef struct {
+
     CGSize moodboardGridSize;
     CGSize artboardGridSize;
 
@@ -17,25 +19,24 @@ typedef struct {
 
     NSEdgeInsets imagesInsets;
     NSEdgeInsets artboardInsets;
+
 } RSPMoodboardConfig;
 
 ///
 /// return default config (size, insets etc) for moodboard
 extern RSPMoodboardConfig defaultMoodboardConfig(void);
 
-#define DEFAULT_PANEL_SIZE CGSizeMake(970, 1076)
+
+extern CGSize const DefaultPanelSize;
+
 #pragma mark - Keys
-#define DOCUMENT_KEY @"document"
+
+extern NSString *const kSketchDocument;
 
 #pragma mark - View Const
-#define MAIN_NIB @"RSPMainPanel"
-#define CELL_NIB @"PhotoCollectionViewItem"
-#define PANEL_THREAD_KEY @"rsp_toolbar"
-#define DEBUG_PANEL_THREAD_KEY @"rsp_debug"
-#define PROCESS_THREAD_KEY @"rsp_main"
 
-#pragma makr - String Literals
-#define PageNameText @"Moodboard"
-#define ArtboardNameText @"Moodboard %li"
-#define GridHintText @"%i columns x %i rows"
-#define SelectedHintText @"%lu images selected"
+extern NSString *const kPanelThread;
+
+extern NSString *const kDebugPanelThread;
+
+extern NSString *const kProcessThread;

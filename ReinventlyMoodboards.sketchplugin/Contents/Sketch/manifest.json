@@ -1,10 +1,10 @@
 {
   "author": "Reinvently",
   "identifier": "com.reinvently.sketch.moodboadrs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A streamlined Sketch plugin for creating moodboards quickly and easily. Just do a search, check the suitable images, and - voila -  you have a beautiful moodboard. Keep inspired!",
   "authorEmail": "hello@reinvently.com",
-  "name": "Reinvently MoodBooards",
+  "name": "Moodboard Builder",
   "appcast": "https://raw.githubusercontent.com/Reinvently/moodboards-sketch-plugin/master/appcast.xml",
   "commands": [
     {
@@ -25,7 +25,7 @@
       "shortcut": ""
     },
     {
-      "name": "Feedback",
+      "name": "Feedback (hello@reinvently.com)",
       "identifier": "com.reinvently.sketch.feedback",
       "handler": "openFeedback",
       "script": "script.cocoascript",
@@ -33,7 +33,7 @@
     }
   ],
   "menu": {
-    "title": "Reinvently MoodBooards",
+    "title": "Moodboard Builder",
     "items": [
       "com.reinvently.sketch.run",
       "-",

@@ -7,25 +7,37 @@
 //
 
 #import "RSPMainPanel.h"
-#import "Config.h"
+
+@interface RSPMainPanel ()
+
+///
+/// Outlets
+@property(strong) IBOutlet NSTextField *searchTextField;
+@property(strong) IBOutlet NSLayoutConstraint *expandedHeightConstraint;
+@property(strong) IBOutlet NSLayoutConstraint *expandedWidthConstraint;
+@property(strong) IBOutlet NSView *searchForm;
+@property(strong) IBOutlet NSProgressIndicator *activityIndicator;
+
+@end
+
 @implementation RSPMainPanel
 
-- (void) awakeFromNib{
+- (void)awakeFromNib {
     [super awakeFromNib];
     [self setUpPanel];
 }
 
-- (void)setUpPanel{
+- (void)setUpPanel {
     self.searchForm.wantsLayer = YES;
     NSTextFieldCell *cell = self.searchTextField.cell;
     NSColor *color = [NSColor colorWithWhite:1.f alpha:0.5f];
     NSFont *font = cell.font;
     NSString *text = cell.placeholderString;
-    if (text && color && font){
+    if (text && color && font) {
         cell.placeholderAttributedString = [[NSAttributedString alloc] initWithString:text
-                                                                       attributes:@{
-                                                                                    NSForegroundColorAttributeName:color,
-                                                                                    NSFontAttributeName:cell.font}];
+                                                                           attributes:@{
+                                                                                   NSForegroundColorAttributeName: color,
+                                                                                   NSFontAttributeName: cell.font}];
     }
     [self expandPanel:NO];
 }
@@ -66,7 +78,7 @@
     };
     if (expand) {
         CGRect frame = self.frame;
-        frame.size = DEFAULT_PANEL_SIZE;
+        frame.size = DefaultPanelSize;
         [self setFrame:frame display:YES animate:YES];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), dispatchBlock);
     } else {

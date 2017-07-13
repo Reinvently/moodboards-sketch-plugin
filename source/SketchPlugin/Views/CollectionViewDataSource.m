@@ -9,14 +9,16 @@
 #import "CollectionViewDataSource.h"
 #import "PhotoCollectionViewItem.h"
 #import "UIImageView+WebCache.h"
-#import "Config.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CollectionViewDataSource ()
+
 @property(weak) NSCollectionView *collectionView;
 @end
 
 @implementation CollectionViewDataSource
+
 @dynamic selectedItems;
 #pragma mark - Public
 
@@ -49,12 +51,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.collectionView performBatchUpdates:^{
+
         NSUInteger oldCount = _items.count;
         _items = [self.items arrayByAddingObjectsFromArray:items];
+
         NSMutableArray *arrayWithIndexPaths = [NSMutableArray array];
         for (NSUInteger i = oldCount; i < oldCount + items.count; i++) {
             [arrayWithIndexPaths addObject:[NSIndexPath indexPathForItem:i inSection:0]];
         }
+
         [self.collectionView insertItemsAtIndexPaths:[NSSet setWithArray:arrayWithIndexPaths]];
     }                      completionHandler:NULL];
 }
@@ -85,7 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSCollectionViewItem *)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
-    PhotoCollectionViewItem *item = [collectionView makeItemWithIdentifier:CELL_NIB forIndexPath:indexPath];
+    NSString *cellId = NSStringFromClass(PhotoCollectionViewItem.class);
+    PhotoCollectionViewItem *item = [collectionView makeItemWithIdentifier:cellId forIndexPath:indexPath];
     RSPItem *imageItem = self.items[(NSUInteger) indexPath.item];
     [item.imageView sd_setImageWithURL:imageItem.imgURL];
     return item;
@@ -99,7 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate collectionViewDataSourceDidChangeSelection:self];
 }
 
-- (void)collectionView:(NSCollectionView *)collectionView willDisplayItem:(NSCollectionViewItem *)item forRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
+- (void)         collectionView:(NSCollectionView *)collectionView
+                willDisplayItem:(NSCollectionViewItem *)item
+forRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.item == (self.items.count - 1)) {
         [self.delegate collectionViewDataSource:self prefetchItemFromIndex:(NSUInteger) indexPath.item];
     }

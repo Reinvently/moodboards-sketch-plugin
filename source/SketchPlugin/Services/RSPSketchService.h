@@ -9,8 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "Config.h"
 #import "RSPItem.h"
+
 NS_ASSUME_NONNULL_BEGIN
+
 @interface RSPSketchService : NSObject
+
 ///
 /// Create moodboards
 /// @param items Images
@@ -18,4 +21,5 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param document parent document
 - (void)createMoodboardsWithItems:(NSArray<RSPItem *> *)items moodboardConfig:(RSPMoodboardConfig)moodboardConfig document:(id)document;
 @end
+
 NS_ASSUME_NONNULL_END

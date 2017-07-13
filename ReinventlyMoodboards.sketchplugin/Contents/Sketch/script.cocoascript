@@ -1,17 +1,28 @@
 @import 'SketchPlugin.framework/RSPHelper.js'
 var onRun = function(context) {
-  var main = RSPMain.alloc().init();
-  main.run(context)
+ 	var main = RSPMain.alloc().init();
+ 	main.run(context)
 };
 
 function openHelp(){
-  openURL('https://github.com/Reinvently/moodboards-sketch-plugin');
+  	openURL('http://reinvently.com/moodboard-builder-sketch-plugin/');
 }
 
-function openFeedback(){
-  openURL('https://github.com/Reinvently/moodboards-sketch-plugin/issues/new');
+function openFeedback(context){
+	//reference the Sketch Document
+   	var doc = context.document;
+
+   	var body = "";
+   	var emailService = NSSharingService.sharingServiceNamed(NSSharingServiceNameComposeEmail);
+   	emailService.recipients = ["hello@reinvently.com"];
+   	emailService.subject = "Feedback Moodboard  Builder";
+   
+   	emailService.performWithItems([body]);
+
+   	doc.showMessage("Thanks!");
 }
 
 function openURL(url){
-	 NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
+	NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
 }
+

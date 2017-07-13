@@ -6,30 +6,8 @@
 #import "RSPLogger.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@implementation RSPLogger
-- (void)iterateObjects:(id)object {
-    if ([object isKindOfClass:NSArray.class]) {
-        [self appendToMyTextView:NSLocalizedString(@"Array:",@"")];
-        for (id item in object) {
-            [self iterateObjects:item];
-        }
-        [self appendToMyTextView:NSLocalizedString(@"End Array",@"")];
-        return;
-    }
-    if ([object isKindOfClass:NSDictionary.class]) {
-        [self appendToMyTextView:NSLocalizedString(@"Dictionary:",@"")];
-        for (id item in object) {
-            [self appendToMyTextView:NSLocalizedString(@"KEY:",@"")];
-            [self appendToMyTextView:item];
-            [self appendToMyTextView:NSLocalizedString(@"OBJECT:",@"")];
-            [self iterateObjects:object[item]];
-        }
-        [self appendToMyTextView:NSLocalizedString(@"End Dictionary",@"")];
-        return;
-    }
 
-    [self appendToMyTextView:NSStringFromClass([object class])];
-}
+@implementation RSPLogger
 
 - (void)appendToMyTextView:(NSString *)text {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -48,8 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)logMessage:(NSString *)string {
-    NSLog(NSLocalizedString(@"RSPlugin %@",@""), string);
+    NSLog(@"RSPlugin %@", string);
     [self appendToMyTextView:string];
 }
 @end
+
 NS_ASSUME_NONNULL_END

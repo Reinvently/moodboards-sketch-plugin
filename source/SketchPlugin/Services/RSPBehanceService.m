@@ -8,52 +8,32 @@
 
 #import "RSPBehanceService.h"
 #import "RSPLogger.h"
+#import "Macros.h"
 
-#define BEHANCE_API_URL  @"https://api.behance.net/v2/projects?q=%@&page=%lu&client_id=OPuJSfVVGSacAPbxKBYGE6xeW4qKAA7u&sort=appreciations"
-#define API_PROJECTS_KEY @"projects"
-#define API_COVERS_KEY @"covers"
-#define API_ITEM_KEY @"404"
-#define API_PROJECT_NAME_KEY @"name"
-#define API_PROJECT_URL_KEY @"url"
+static NSString *const BehanceApiURL = @"https://api.behance.net/v2/projects?q=%@&page=%lu&client_id=OPuJSfVVGSacAPbxKBYGE6xeW4qKAA7u&sort=appreciations";
 
-#define LOLDynamicCast(object, classType) ([(object) isKindOfClass:[classType class]]?((classType*)object):nil)
+static NSInteger const BehanceLimitErrorCode = 429;
+
+static NSString *const kBehanceApiProject = @"projects";
+
+static NSString *const kBehanceApiCovers = @"covers";
+
+static NSString *const kBehanceApiImageItem = @"404";
+
+static NSString *const kBehanceApiName = @"name";
+
+static NSString *const kBehanceApiURL = @"url";
+
 NS_ASSUME_NONNULL_BEGIN
-@interface RSPBehanceService ()
-@property(strong) NSURLSession *session;
-@end
 
 @implementation RSPBehanceService
+
 #pragma mark - Public
 
 ///
-/// Initializer
-/// @return new instance
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        NSURLSessionConfiguration *defaultConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        self.session = [NSURLSession sessionWithConfiguration:defaultConfiguration delegate:nil delegateQueue:NSOperationQueue.mainQueue];
-    }
-    return self;
-}
-
-///
-/// Loading bunch of items
-/// @param query  search query
-/// @param page  page number
-/// @param completionHandler  completion handler
-- (void) getItems:(NSString *)query
-             page:(NSUInteger)page
-completionHandler:(void (^)(NSArray<RSPItem *> *__nullable url, NSError *__nullable error))completionHandler {
-
-    [[self.session dataTaskWithURL:[self urlWithQuery:query page:page]
-                 completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                     if (error) {
-                         completionHandler(nil, [self processError:error response:response]);
-                     } else {
-                         completionHandler([self mapDataToModel:data], nil);
-                     }
-                 }] resume];
+/// @return Name of Search Service
+- (NSString *)serviceName {
+    return @"Behance";
 }
 
 #pragma mark - Url
@@ -63,9 +43,9 @@ completionHandler:(void (^)(NSArray<RSPItem *> *__nullable url, NSError *__nulla
 /// @param query search query
 /// @param page page number
 /// @return url
-- (NSURL *)urlWithQuery:(NSString *)query page:(NSUInteger)page {
+- (nullable NSURL *)urlWithQuery:(NSString *)query page:(NSUInteger)page {
     query = [query stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-    NSString *urlStr = [NSString stringWithFormat:BEHANCE_API_URL, query, page];
+    NSString *urlStr = [NSString stringWithFormat:BehanceApiURL, query, page];
     RSPLog(urlStr);
     return [NSURL URLWithString:urlStr];
 }
@@ -82,28 +62,33 @@ completionHandler:(void (^)(NSArray<RSPItem *> *__nullable url, NSError *__nulla
     jsonResponse = LOLDynamicCast(jsonResponse, NSDictionary);
 
     NSMutableArray <RSPItem *> *result = [NSMutableArray array];
-    NSArray<NSDictionary *> *projects = LOLDynamicCast(jsonResponse[API_PROJECTS_KEY], NSArray);
+    NSArray<NSDictionary *> *projects = LOLDynamicCast(jsonResponse[kBehanceApiProject], NSArray);
 
     for (NSDictionary *project in projects) {
-        NSDictionary *cover = LOLDynamicCast(project[API_COVERS_KEY], NSDictionary);
-        NSString *urlStr = LOLDynamicCast(cover[API_ITEM_KEY], NSString);
-        NSString *urlProject = LOLDynamicCast(project[API_PROJECT_URL_KEY], NSString);
-        NSString *nameProject = LOLDynamicCast(project[API_PROJECT_NAME_KEY], NSString);
+
+        NSDictionary *cover = LOLDynamicCast(project[kBehanceApiCovers], NSDictionary);
+        NSString *urlStr = LOLDynamicCast(cover[kBehanceApiImageItem], NSString);
+        NSString *urlProject = LOLDynamicCast(project[kBehanceApiURL], NSString);
+        NSString *nameProject = LOLDynamicCast(project[kBehanceApiName], NSString);
+
         if (urlStr == nil) {
             continue;
         }
         NSURL *tmpURL = [NSURL URLWithString:urlStr];
-        if (tmpURL==nil) {
+        if (tmpURL == nil) {
             continue;
         }
-        RSPItem* item = [RSPItem new];
+
+        RSPItem *item = [RSPItem new];
         item.imgURL = tmpURL;
         item.name = nameProject;
         item.itemURLString = urlProject;
+        item.source = self.serviceName;
         [result addObject:item];
+
     }
-    
-    return result;
+
+    return [result copy];
 }
 
 #pragma mark - Error Handling
@@ -115,7 +100,7 @@ completionHandler:(void (^)(NSArray<RSPItem *> *__nullable url, NSError *__nulla
 /// @return Modified error(if required)
 - (NSError *)processError:(NSError *)error response:(NSURLResponse *)response {
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-    if (httpResponse.statusCode == 429) {
+    if (httpResponse.statusCode == BehanceLimitErrorCode) {
         error = [self errorToManyRequests];
     }
     return error;
@@ -125,7 +110,7 @@ completionHandler:(void (^)(NSArray<RSPItem *> *__nullable url, NSError *__nulla
 /// A special error for situation where user rich max limit
 /// @return error
 - (NSError *)errorToManyRequests {
-    NSString *errorMessage = NSLocalizedString(@"You have sent too many search requests in a given amount of time. Please try again later", @"");
+    NSString *errorMessage = RSPLocalizedString(@"You have sent too many search requests in a given amount of time. Please try again later");
     return [NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: errorMessage}];
 }
 @end

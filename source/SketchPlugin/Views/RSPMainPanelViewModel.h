@@ -48,6 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)resetPage;
 
 ///
+/// Check if pages is reset
+/// @return isResetPage
+- (BOOL)isResetPage;
+
+///
 /// Current page for searching
 /// @return page
 - (NSUInteger)page;

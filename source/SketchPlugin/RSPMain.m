@@ -7,7 +7,6 @@
 //
 
 @import AppKit;
-@import Foundation;
 #import "RSPMain.h"
 #import "RSPSketchService.h"
 #import "RSPBehanceService.h"
@@ -16,16 +15,19 @@
 #import "RSPMainPanel.h"
 #import "MPGoogleAnalyticsTracker.h"
 #import "MPAnalyticsConfiguration.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RSPMain () <CollectionViewDataSourceDelegate, RSPMainPanelDelegate>
 
 @property(strong) RSPMainPanelViewModel *viewModel;
-@property(strong) RSPBehanceService *behanceService;
+@property(strong) NSArray< id <RSPItemsSearching>> *searchServices;
 @property(strong) RSPSketchService *sketchService;
+
 @end
 
 @implementation RSPMain
+
 #pragma mark - Public
 
 ///
@@ -33,15 +35,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param context Sketch Context
 - (void)run:(NSDictionary *)context {
     //set up logger
-    RSPLogger.sharedLogger.textView = self.textView;
-    RSPLog(NSLocalizedString(@"Init plugin", @""));
+
+    RSPLog(@"Init plugin");
 
     //load view
     [self loadViews];
 
     //setup services
-    self.document = context[DOCUMENT_KEY];
-    self.behanceService = [RSPBehanceService new];
+    self.document = context[kSketchDocument];
+
+    self.searchServices = @[[RSPBehanceService new]];
     self.sketchService = [RSPSketchService new];
     //Set state
     self.viewModel = [[RSPMainPanelViewModel alloc] initWithCollectionView:self.mainPanel.collectionView delegate:self];
@@ -57,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSUInteger selectedItemsCount = self.viewModel.dataSource.selectedItems.count;
     [MPGoogleAnalyticsTracker trackEventOfCategory:@"Plugin" action:@"GenerateMoodboard"
                                              label:self.viewModel.query value:@(selectedItemsCount)];
-    
+
     [self.mainPanel startActivityIndication];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.sketchService createMoodboardsWithItems:self.viewModel.dataSource.selectedItems
@@ -75,20 +78,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)generatePreview {
     [MPGoogleAnalyticsTracker trackEventOfCategory:@"Plugin" action:@"GeneratePreview"
                                              label:self.viewModel.query value:@1];
-    
+
     //prepare params
     [self.mainPanel expandPanel:YES];
     [self.viewModel resetPage];
-    [self.behanceService getItems:self.viewModel.query page:self.viewModel.page completionHandler:^(NSArray<RSPItem *> *urls, NSError *error) {
-        [self handleNewItems:urls reset:YES error:error];
-    }];
+    [self searchItemsAndPurgePrevSearchResult:YES];
 }
 
 ///
 /// @param urls  fetched items
 /// @param reset Should clear data source
 /// @param error error
-- (void)handleNewItems:(NSArray<RSPItem *> *)urls reset:(BOOL)reset error:(NSError *)error {
+- (void)handleNewItems:(NSArray<RSPItem *> *)urls reset:(BOOL)reset error:(nullable NSError *)error {
     if (error) {
         [self handleError:error];
         return;
@@ -99,7 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self.viewModel.dataSource addItems:urls];
     }
-
 }
 
 ///
@@ -143,14 +143,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadViews {
     NSMutableDictionary *threadDictionary = NSThread.mainThread.threadDictionary;
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
-    [bundle loadNibNamed:MAIN_NIB owner:self topLevelObjects:nil];
+    NSString *nibName = NSStringFromClass(RSPMainPanel.class);
+    [bundle loadNibNamed:nibName owner:self topLevelObjects:nil];
     NSPanel *mainToolBar = self.mainPanel;
     self.mainPanel.panelDelegate = self;
 
-#ifdef DEBUG
+#ifdef DEBUG_PANEL
+    RSPLogger.sharedLogger.textView = self.textView;
     [self.debugPanel center];
     [self.debugPanel makeKeyAndOrderFront:nil];
-    threadDictionary[DEBUG_PANEL_THREAD_KEY] = self.debugPanel;
+    threadDictionary[kDebugPanelThread] = self.debugPanel;
 #else
     [self.debugPanel close];
 #endif
@@ -158,17 +160,18 @@ NS_ASSUME_NONNULL_BEGIN
     mainToolBar.level = NSFloatingWindowLevel;
     [mainToolBar center];
     [mainToolBar makeKeyAndOrderFront:nil];
-    threadDictionary[PANEL_THREAD_KEY] = mainToolBar;
-    threadDictionary[PROCESS_THREAD_KEY] = self;
-    RSPLog(NSLocalizedString(@"Did load views", @""));
+    threadDictionary[kPanelThread] = mainToolBar;
+    threadDictionary[kProcessThread] = self;
+    RSPLog(@"Did load views");
 }
 
-- (void)setUpAnalytics{
+- (void)setUpAnalytics {
     MPAnalyticsConfiguration *configuration = [[MPAnalyticsConfiguration alloc] initWithAnalyticsIdentifier:@"UA-101345182-1"];
     [MPGoogleAnalyticsTracker activateConfiguration:configuration];
     [MPGoogleAnalyticsTracker trackEventOfCategory:@"Plugin" action:@"Launch"
                                              label:nil value:@1];
 }
+
 #pragma mark - User interaction
 
 ///
@@ -201,20 +204,57 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Collection View
 
 - (void)collectionViewDataSource:(CollectionViewDataSource *)dataSource prefetchItemFromIndex:(NSUInteger)index {
-    RSPLog(NSLocalizedString(@"Fetch next page", @""));
+    RSPLog(@"Fetch next page");
     [MPGoogleAnalyticsTracker trackEventOfCategory:@"Plugin" action:@"LoadNextPage"
                                              label:self.viewModel.query value:@1];
-    
+
     [self.viewModel nextPage];
-    [self.behanceService getItems:self.viewModel.query
-                             page:self.viewModel.page
-                completionHandler:^(NSArray<RSPItem *> *_Nullable urls, NSError *error) {
-                    [self handleNewItems:urls reset:NO error:error];
-                }];
+    [self searchItemsAndPurgePrevSearchResult:NO];
 }
 
 - (void)collectionViewDataSourceDidChangeSelection:(CollectionViewDataSource *)dataSource {
     [self updateState];
+}
+
+#pragma mark search
+
+- (void)searchItemsAndPurgePrevSearchResult:(BOOL)purge {
+    //TODO: remove this functional to service which allow aggregate another services
+    if (self.searchServices.count == 0) {
+        return;
+    }
+    dispatch_group_t group = dispatch_group_create();
+
+    __block NSMutableArray<RSPItem *> *result = @[].mutableCopy;
+    __block NSError *lastError = nil;
+
+    for (id <RSPItemsSearching> searchService in self.searchServices) {
+
+        if (self.viewModel.isResetPage) {
+            searchService.suspended = NO;
+        }
+
+        dispatch_group_enter(group);
+        [searchService getItems:self.viewModel.query
+                           page:self.viewModel.page
+              completionHandler:^(NSArray<RSPItem *> *_Nullable urls, NSError *error) {
+                  if (error) {
+                      lastError = error;
+                  } else if (urls.count == 0) {
+                      //if we dont have already items for search then block searching for this service
+                      //to avoid sending many request
+                      searchService.suspended = YES;
+                  }
+                  if (urls) {
+                      [result addObjectsFromArray:urls];
+                  }
+                  dispatch_group_leave(group);
+              }];
+    }
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSError *error = result.count > 0 ? nil : lastError;
+        [self handleNewItems:result reset:purge error:error];
+    });
 }
 @end
 

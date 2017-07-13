@@ -21,3 +21,19 @@ RSPMoodboardConfig defaultMoodboardConfig(void) {
     };
     return DefaultMoodboardConfig;
 }
+
+
+CGSize const DefaultPanelSize = {970, 1076};
+
+#pragma mark - Keys
+
+NSString *const kSketchDocument = @"document";
+
+#pragma mark - View Const
+
+NSString *const kPanelThread = @"rsp_toolbar";
+
+NSString *const kDebugPanelThread = @"rsp_debug";
+
+NSString *const kProcessThread = @"rsp_main";
+

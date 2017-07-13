@@ -8,16 +8,19 @@
 
 #import <Cocoa/Cocoa.h>
 #import "RSPItem.h"
+
 @protocol CollectionViewDataSourceDelegate;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CollectionViewDataSource : NSObject <NSCollectionViewDataSource, NSCollectionViewDelegate>
+
 ///
 /// Get/Set  items
-@property(strong, nonatomic) NSArray<RSPItem*> *items;
+@property(strong, nonatomic) NSArray<RSPItem *> *items;
 ///
 /// Get selected items
-@property(nullable, readonly) NSArray<RSPItem*> *selectedItems;
+@property(nullable, readonly) NSArray<RSPItem *> *selectedItems;
 ///
 ///Delegate
 @property(nullable, weak) id <CollectionViewDataSourceDelegate> delegate;
@@ -36,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @protocol CollectionViewDataSourceDelegate
+
 @required
 ///
 /// Notify about fetching new items

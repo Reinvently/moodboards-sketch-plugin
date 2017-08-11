@@ -60,8 +60,9 @@ completionHandler:(void (^)(NSArray<RSPItem *> *__nullable url, NSError *__nulla
                          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
                              NSArray *result = [self mapDataToModel:data];
-
+                             NSString *logString = [NSString stringWithFormat:@"Found %lu items", (unsigned long)result.count];
                              dispatch_async(dispatch_get_main_queue(), ^{
+                                 RSPLog(logString);
                                  completionHandler(result, nil);
                              });
                          });

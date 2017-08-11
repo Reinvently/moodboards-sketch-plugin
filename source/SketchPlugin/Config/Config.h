@@ -40,3 +40,5 @@ extern NSString *const kPanelThread;
 extern NSString *const kDebugPanelThread;
 
 extern NSString *const kProcessThread;
+
+extern NSString *const kFakeSupplementaryViewId;

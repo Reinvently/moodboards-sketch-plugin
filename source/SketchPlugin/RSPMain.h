@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 ///
 /// Output for debug information
-@property(weak) IBOutlet NSTextView *textView;
+@property(strong) IBOutlet NSTextView *textView;
 
 ///
 /// Context

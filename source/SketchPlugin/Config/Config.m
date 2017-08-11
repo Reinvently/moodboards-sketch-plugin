@@ -37,3 +37,4 @@ NSString *const kDebugPanelThread = @"rsp_debug";
 
 NSString *const kProcessThread = @"rsp_main";
 
+NSString *const kFakeSupplementaryViewId = @"fakeView";

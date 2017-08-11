@@ -9,7 +9,8 @@
 #import "CollectionViewDataSource.h"
 #import "PhotoCollectionViewItem.h"
 #import "UIImageView+WebCache.h"
-
+#import "Config.h"
+#import "RSPLogger.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CollectionViewDataSource ()
@@ -24,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 ///
 /// Initializer
-/// @param collectionView
+/// @param collectionView collection view
 /// @return new instance
 - (instancetype)initWithCollectionView:(NSCollectionView *)collectionView {
     self = [super init];
@@ -37,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// Get/Set  items
 - (void)setItems:(NSArray<id> *)items {
+    RSPLog(@"set items");
     _items = items;
     [self.collectionView reloadData];
 }
@@ -44,8 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 ///
 /// Add items to collection view
-/// @param items
+/// @param items Items which will be added
 - (void)addItems:(NSArray<id> *)items {
+    RSPLog(@"Add items");
     if (items.count == 0) {
         return;
     }
@@ -77,6 +80,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.collectionView = collectionView;
     collectionView.delegate = self;
     collectionView.dataSource = self;
+    NSString *cellId = NSStringFromClass(PhotoCollectionViewItem.class);
+    NSNib *theNib = [[NSNib alloc] initWithNibNamed:@"PhotoCollectionViewItem" bundle:[NSBundle bundleForClass:self.class]];
+    [collectionView registerNib:theNib forItemWithIdentifier:cellId];
+    
+    //Add fake suppplementary view to prevent crash on OS X 10.11
+    [collectionView registerClass:UIView.class forSupplementaryViewOfKind:NSCollectionElementKindSectionHeader withIdentifier:kFakeSupplementaryViewId];
+    [collectionView registerClass:UIView.class forSupplementaryViewOfKind:NSCollectionElementKindSectionFooter withIdentifier:kFakeSupplementaryViewId];
 }
 
 #pragma mark - Collection View
@@ -94,8 +104,15 @@ NS_ASSUME_NONNULL_BEGIN
     PhotoCollectionViewItem *item = [collectionView makeItemWithIdentifier:cellId forIndexPath:indexPath];
     RSPItem *imageItem = self.items[(NSUInteger) indexPath.item];
     [item.imageView sd_setImageWithURL:imageItem.imgURL];
+    item.representedObject = imageItem;
     return item;
 }
+
+- (nonnull NSView *)collectionView:(nonnull NSCollectionView *)collectionView viewForSupplementaryElementOfKind:(nonnull NSString *)kind atIndexPath:(nonnull NSIndexPath *)indexPath {
+    UIView *view = [collectionView makeSupplementaryViewOfKind:kind withIdentifier:kFakeSupplementaryViewId forIndexPath:indexPath];
+    return view;
+}
+
 
 - (void)collectionView:(NSCollectionView *)collectionView didSelectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths {
     [self.delegate collectionViewDataSourceDidChangeSelection:self];

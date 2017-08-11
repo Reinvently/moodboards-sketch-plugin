@@ -7002,6 +7002,7 @@
 				INFOPLIST_FILE = SketchPlugin/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-Wl,-undefined,dynamic_lookup";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reinvently.sketchPlugin.SketchPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -7026,6 +7027,7 @@
 				INFOPLIST_FILE = SketchPlugin/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "-Wl,-undefined,dynamic_lookup";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reinvently.sketchPlugin.SketchPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";

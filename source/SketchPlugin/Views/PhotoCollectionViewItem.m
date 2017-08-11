@@ -35,25 +35,36 @@
 }
 
 - (void)mouseDown:(NSEvent *)event {
-    [super mouseDown:event];
-
-    if ((self.isSelected) && (event.type == NSEventTypeLeftMouseDown)) {
-        [self processDeselect];
+    if (event.type == NSEventTypeLeftMouseDown) {
+        NSIndexPath *iPath = [self.collectionView indexPathForItem:self];
+        if ([self.collectionView.selectionIndexPaths containsObject:iPath]){
+            [self processDeselect];
+        }else{
+            [self processSelect];
+        }
     }
 }
 
 #pragma mark - Helpers
-
-- (void)processDeselect {
+- (NSSet<NSIndexPath*>*) indexPathSet{
     NSIndexPath *iPath = [self.collectionView indexPathForItem:self];
     if (iPath == nil) {
-        return;
+        return [NSSet set];
     }
+    return [NSSet setWithCollectionViewIndexPath:iPath];
+}
 
-    NSSet *indexPathSet = [NSSet setWithCollectionViewIndexPath:iPath];
-    [self.collectionView deselectItemsAtIndexPaths:indexPathSet];
+- (void)processDeselect {
+    [self.collectionView deselectItemsAtIndexPaths:self.indexPathSet];
     if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:didDeselectItemsAtIndexPaths:)]) {
-        [self.collectionView.delegate collectionView:self.collectionView didDeselectItemsAtIndexPaths:indexPathSet];
+        [self.collectionView.delegate collectionView:self.collectionView didDeselectItemsAtIndexPaths:self.indexPathSet];
+    }
+}
+
+- (void)processSelect {
+    [self.collectionView selectItemsAtIndexPaths:self.indexPathSet scrollPosition:NSCollectionViewScrollPositionNone];
+    if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:didSelectItemsAtIndexPaths:)]) {
+        [self.collectionView.delegate collectionView:self.collectionView didSelectItemsAtIndexPaths:self.indexPathSet];
     }
 }
 @end

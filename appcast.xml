@@ -27,6 +27,18 @@
         </description>
         <enclosure url="https://github.com/Reinvently/moodboards-sketch-plugin/releases/download/v1.1.0/ReinventlyMoodboards.sketchplugin.zip" sparkle:version="1.1" />
       </item>
-
+      <item>
+        <title>Version 1.2.0</title>
+        <description>
+          <![CDATA[
+            <ul>
+            <li>Added support Mac OS X 10.11 El Capitan</li>
+            <li>Improved stability</li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="https://github.com/Reinvently/moodboards-sketch-plugin/releases/download/v1.2.0/ReinventlyMoodboards.sketchplugin.zip" sparkle:version="1.1" />
+      </item>
+    
   </channel>
 </rss>

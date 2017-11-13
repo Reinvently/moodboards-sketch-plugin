@@ -1,7 +1,7 @@
 {
   "author": "Reinvently",
   "identifier": "com.reinvently.sketch.moodboadrs",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "A streamlined Sketch plugin for creating moodboards quickly and easily. Just do a search, check the suitable images, and - voila -  you have a beautiful moodboard. Keep inspired!",
   "authorEmail": "hello@reinvently.com",
   "name": "Moodboard Builder",

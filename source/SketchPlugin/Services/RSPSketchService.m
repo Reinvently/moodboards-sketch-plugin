@@ -7,7 +7,6 @@
 //
 
 #import "RSPSketchService.h"
-//please find interfaces for Sketch http://developer.sketchapp.com/reference/api/ and  https://github.com/abynim/Sketch-Headers
 #import "Macros.h"
 
 #pragma clang diagnostic push
@@ -143,7 +142,14 @@ NS_ASSUME_NONNULL_BEGIN
     [artboard addLayer:newImage];
 
     NSImage *image = [[NSImage alloc] initWithContentsOfURL:imageURL];
-    MSImageData *msImage = [(MSImageData *) [RSPClass(MSImageData) alloc] initWithImage:image convertColorSpace:YES];
+    
+    MSImageData *msImage = (MSImageData *) [RSPClass(MSImageData) alloc];
+    if ([msImage respondsToSelector:@selector(initWithImage:convertColorSpace:)]){
+        msImage = [msImage initWithImage:image convertColorSpace:YES];
+    }else {
+        //TODO: Add handler for situation where object doesn't respond to selector for all sketch api calls
+        msImage = [msImage initWithImageConvertingColorSpace:image];
+    }
 
     newImage.image = msImage;
     return newImage;

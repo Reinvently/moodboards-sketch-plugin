@@ -144,7 +144,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSImage *image = [[NSImage alloc] initWithContentsOfURL:imageURL];
     
     MSImageData *msImage = (MSImageData *) [RSPClass(MSImageData) alloc];
-    if ([msImage respondsToSelector:@selector(initWithImage:convertColorSpace:)]){
+    if ([msImage respondsToSelector:@selector(initWithImage:)]) {
+        msImage = [msImage initWithImage:image];
+    }else if([msImage respondsToSelector:@selector(initWithImage:convertColorSpace:)]){
         msImage = [msImage initWithImage:image convertColorSpace:YES];
     }else {
         //TODO: Add handler for situation where object doesn't respond to selector for all sketch api calls

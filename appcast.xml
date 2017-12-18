@@ -51,5 +51,17 @@
         </description>
         <enclosure url="https://github.com/Reinvently/moodboards-sketch-plugin/releases/download/v1.3.0/ReinventlyMoodboards.sketchplugin.zip" sparkle:version="1.3.0" />
       </item>
+         <item>
+        <title>Version 1.4.0</title>
+        <description>
+          <![CDATA[
+            <ul>
+            <li>Added support for Sketch 48.1</li>
+            <li>Improved stability</li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="https://github.com/Reinvently/moodboards-sketch-plugin/releases/download/v1.4.0/ReinventlyMoodboards.sketchplugin.zip" sparkle:version="1.4.0" />
+      </item>
   </channel>
 </rss>

@@ -14,7 +14,7 @@
         "run": "onRun"
       },
       "script": "script.cocoascript",
-      "shortcut": "cmd shift m",
+      "shortcut": "cmd shift m"
       
     },
     {
